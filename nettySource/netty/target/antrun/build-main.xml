@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+  <exec resultproperty="gitExitCode" failifexecutionfails="false" failonerror="false" outputproperty="gitOutput" executable="git">
+    <arg value="log"/>
+    <arg value="-1"/>
+    <arg value="--format=format:%h"/>
+  </exec>
+  <mkdir dir="E:\netty2\nettySource\netty\target"/>
+  <echo file="E:\netty2\nettySource\netty\target/version.txt" message="3.10.5.Final"/>
+</target>
+</project>
