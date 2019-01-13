@@ -50,8 +50,7 @@ public class NioWorker extends AbstractNioWorker {
         final SocketChannel ch = (SocketChannel) k.channel();
         final NioSocketChannel channel = (NioSocketChannel) k.attachment();
 
-        final ReceiveBufferSizePredictor predictor =
-            channel.getConfig().getReceiveBufferSizePredictor();
+        final ReceiveBufferSizePredictor predictor = channel.getConfig().getReceiveBufferSizePredictor();
         final int predictedRecvBufSize = predictor.nextReceiveBufferSize();
         final ChannelBufferFactory bufferFactory = channel.getConfig().getBufferFactory();
 

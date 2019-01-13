@@ -47,7 +47,7 @@ public class Client {
         });
 
         //连接服务端
-        ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 10101));
+        ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 9898));
         Channel channel = connect.getChannel();
 
         System.out.println("client start");

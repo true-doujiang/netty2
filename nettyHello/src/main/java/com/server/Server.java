@@ -23,6 +23,7 @@ public class Server {
         ServerBootstrap bootstrap = new ServerBootstrap();
 
         ExecutorService boss = Executors.newCachedThreadPool();
+        // 处理读写
         ExecutorService worker = Executors.newCachedThreadPool();
 
         bootstrap.setFactory(new NioServerSocketChannelFactory(boss, worker));
@@ -31,14 +32,16 @@ public class Server {
             @Override
             public ChannelPipeline getPipeline() throws Exception {
                 ChannelPipeline pipeline = Channels.pipeline();
+                // 上行过滤器 Server接收数据时经过
                 pipeline.addLast("decoder", new StringDecoder());
+                // 下行过滤器 Server发送数据时经过
                 pipeline.addLast("encoder", new StringEncoder());
                 pipeline.addLast("helloHandler", new HelloHandler());
                 return pipeline;
             }
         });
 
-        bootstrap.bind(new InetSocketAddress(10101));
+        bootstrap.bind(new InetSocketAddress(9898));
 
         System.out.println("start !! ");
     }

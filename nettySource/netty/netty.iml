@@ -1,32 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="netty-3.10.5.Final.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="org.jboss.netty.container.osgi.NettyBundleActivator" bundleSymbolicName="org.jboss.netty" bundleVersion="3.10.5.Final" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
-        <additionalProperties>
-          <property key="Bundle-Description" value="The Netty project is an effort to provide an asynchronous event-drivennetwork application framework and tools for rapid development ofmaintainable high performance and high scalability protocol servers andclients.  In other words, Netty is a NIO client server framework whichenables quick and easy development of network applications such as protocolservers and clients. It greatly simplifies and streamlines networkprogramming such as TCP and UDP socket server." />
-          <property key="Bundle-Vendor" value="The Netty Project" />
-          <property key="Bundle-DocURL" value="http://netty.io/" />
-          <property key="Export-Package" value="!org.jboss.netty.example.*,!org.jboss.netty.util.internal.*,org.jboss.netty.*;version=3.10.5.Final" />
-          <property key="Private-Package" value="org.jboss.netty.example.*,org.jboss.netty.util.internal.*," />
-          <property key="Import-Package" value="*;resolution:=optional" />
-          <property key="Eclipse-BuddyPolicy" value="registered" />
-          <property key="Bundle-BuddyPolicy" value="registered" />
-          <property key="Main-Class" value="org.jboss.netty.util.Version" />
-          <property key="Bundle-Name" value="Netty" />
-        </additionalProperties>
-        <additionalJARContents />
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/license" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

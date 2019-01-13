@@ -21,6 +21,7 @@ public class OioServer {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        //
         ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
 
         //创建socket服务,监听10101端口
@@ -34,6 +35,7 @@ public class OioServer {
         while (true) {
             //获取一个套接字（阻塞1）   在eclipse要加final修饰呢
             Socket socket = server.accept();
+
             //socket = Socket[addr=/127.0.0.1,port=1750,localport=10101]
             System.out.println(" socket = " + socket);
             System.out.println(Thread.currentThread().getName() + " 来个一个新客户端！");

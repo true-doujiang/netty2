@@ -45,6 +45,8 @@ public class HiHandler extends SimpleChannelHandler {
     }
 
     /**
+     * 关闭连接
+     *
      * 必须是链接已经建立，关闭通道的时候才会触发
      */
     @Override
@@ -54,6 +56,8 @@ public class HiHandler extends SimpleChannelHandler {
     }
 
     /**
+     * 关闭通道
+     *
      * channel关闭的时候触发
      * 连接不一定建立了（server端没有开启直接运行客户端这个方法也会执行）
      */

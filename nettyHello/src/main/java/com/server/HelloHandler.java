@@ -14,6 +14,8 @@ public class HelloHandler extends SimpleChannelHandler {
 
     /**
      * 接收消息
+     *
+     *
      */
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
@@ -60,7 +62,7 @@ public class HelloHandler extends SimpleChannelHandler {
 
     /**
      * 必须是链接已经建立，关闭通道的时候才会触发
-     * 应用场景：可以在用户断线的时候清楚用户的缓存数据等
+     * 应用场景：可以在用户断线的时候清除用户的缓存数据...
      */
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {

@@ -21,6 +21,17 @@ public abstract class AbstractNioSelector implements Runnable{
      */
     private final Executor executor;
 
+
+    /**
+     * 线程名称
+     */
+    private String threadName;
+
+    /**
+     * 线程管理对象
+     */
+    protected NioSelectorRunnablePool nioSelectorRunnablePool;
+
     /**
      * 选择器
      */
@@ -36,21 +47,13 @@ public abstract class AbstractNioSelector implements Runnable{
      */
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedDeque<Runnable>();
 
-    /**
-     * 线程名称
-     */
-    private String threadName;
-
-    /**
-     * 线程管理对象
-     */
-    protected NioSelectorRunnablePool nioSelectorRunnablePool;
 
 
     public AbstractNioSelector(Executor executor, String threadName, NioSelectorRunnablePool nioSelectorRunnablePool) {
         this.executor = executor;
         this.threadName = threadName;
         this.nioSelectorRunnablePool = nioSelectorRunnablePool;
+
         //直接启动
         openSelector();
     }
@@ -61,15 +64,17 @@ public abstract class AbstractNioSelector implements Runnable{
     private void openSelector() {
         try {
             this.selector = Selector.open();
-            System.out.println(Thread.currentThread().getName() + " openSelector() " + this + " 用 选择器 = " + this.selector);
+            System.out.println(Thread.currentThread().getName() + " " + this + " 用 选择器 = " + this.selector);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create a selector.");
         }
         //加入到boss或者worker线程池中
         this.executor.execute(this);
-    };
+    }
 
-
+    /**
+     * 本类new出来后就直接放到线程池中执行了
+     */
     @Override
     public void run() {
         Thread.currentThread().setName(this.threadName);
@@ -77,11 +82,18 @@ public abstract class AbstractNioSelector implements Runnable{
             try {
                 wakenUp.set(false);
 
-                select(this.selector);
+                /**
+                 *  子类实现
+                 */
+                int count = select(this.selector);
+                System.out.println(Thread.currentThread().getName() + "  " + this + "  count= " + count);
 
                 processTaskQueue();
 
-                //对于boss处理客户端接入    对于worker处理客户端读写
+                /**
+                 *  子类实现
+                 *  对于boss处理客户端接入    对于worker处理客户端读写
+                 */
                 process(this.selector);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,18 +103,22 @@ public abstract class AbstractNioSelector implements Runnable{
 
 
     /**
-     * 注册一个任务并激活selector
+     * 添加一个任务并激活selector
      * @param task
      */
     protected final void registerTask(Runnable task) {
         taskQueue.add(task);
-        System.out.println(Thread.currentThread().getName() + "  添加一个任务： task = " + task + " 到 taskQueue = " + taskQueue);
+        System.out.println(Thread.currentThread().getName() + "  添加一个 task= " + task + " ==》 " + this + "[taskQueue]= " + taskQueue);
 
         Selector selector = this.selector;
 
         if (selector != null) {
-            //添加一个任务后就会激活selector
             if (wakenUp.compareAndSet(false, true)) {
+                /**
+                 * 激活run() 里的 int count = select(this.selector);
+                 * 当前有selector.select()阻塞，就直接返回，
+                 * 当前没有selector.select()阻塞，则下次谁调用selector.select()也不用阻塞，直接返回
+                 */
                 selector.wakeup();
             }
         } else {
@@ -111,7 +127,7 @@ public abstract class AbstractNioSelector implements Runnable{
     }
 
     /**
-     * 执行队列里的任务
+     * 取出一个任务，队列里的任务
      */
     private void processTaskQueue() {
         for ( ; ; ) {
@@ -124,10 +140,10 @@ public abstract class AbstractNioSelector implements Runnable{
             //直接调用run()， 那队列中放入其他对象也可以喽
             task.run();
         }
-    };
+    }
 
     /**
-     * select抽象方法
+     * select抽象方法, 具体怎么处理看是boss还是worker了
      * @param selector
      * @return
      * @throws IOException
@@ -135,7 +151,10 @@ public abstract class AbstractNioSelector implements Runnable{
     protected abstract int select(Selector selector) throws IOException;
 
     /**
-     * selector的业务处理
+     * selector的业务处理,
+     * 具体怎么处理具体怎么处理看是
+     * boss[ServerSocketChannel] 负责客户端的接入
+     * worker[SocketChannel] 负责读写
      * @param selector
      * @throws IOException
      */

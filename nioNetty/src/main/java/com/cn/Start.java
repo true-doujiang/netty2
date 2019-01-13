@@ -17,8 +17,8 @@ public class Start {
 
         //获取服务类
         ServerBootstrap bootstrap = new ServerBootstrap(nioSelectorRunnablePool);
-        bootstrap.bind(new InetSocketAddress(10200));
+        bootstrap.bind(new InetSocketAddress(9898));
 
-        System.out.println("server start ---> 10101");
+        System.out.println("server start ---> 9898");
     }
 }

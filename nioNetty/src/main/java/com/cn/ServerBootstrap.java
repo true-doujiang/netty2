@@ -13,8 +13,14 @@ import java.nio.channels.ServerSocketChannel;
  */
 public class ServerBootstrap {
 
+    /**
+     * selector线程管理者
+     */
     private NioSelectorRunnablePool nioSelectorRunnablePool;
 
+    /**
+     * 构造器
+     */
     public ServerBootstrap(NioSelectorRunnablePool nioSelectorRunnablePool) {
         this.nioSelectorRunnablePool = nioSelectorRunnablePool;
     }

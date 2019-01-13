@@ -110,10 +110,8 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      * @param workerExecutor
      *        the {@link Executor} which will execute the I/O worker threads
      */
-    public NioServerSocketChannelFactory(
-            Executor bossExecutor, Executor workerExecutor) {
+    public NioServerSocketChannelFactory(Executor bossExecutor, Executor workerExecutor) {
         this(bossExecutor, workerExecutor, getMaxThreads(workerExecutor));
-        System.out.println("=============");
     }
 
     /**
@@ -126,9 +124,7 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      * @param workerCount
      *        the maximum number of I/O worker threads
      */
-    public NioServerSocketChannelFactory(
-            Executor bossExecutor, Executor workerExecutor,
-            int workerCount) {
+    public NioServerSocketChannelFactory(Executor bossExecutor, Executor workerExecutor, int workerCount) {
         this(bossExecutor, 1, workerExecutor, workerCount);
     }
 
@@ -144,9 +140,7 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      * @param workerCount
      *        the maximum number of I/O worker threads
      */
-    public NioServerSocketChannelFactory(
-            Executor bossExecutor, int bossCount, Executor workerExecutor,
-            int workerCount) {
+    public NioServerSocketChannelFactory(Executor bossExecutor, int bossCount, Executor workerExecutor, int workerCount) {
         this(bossExecutor, bossCount, new NioWorkerPool(workerExecutor, workerCount));
     }
 
@@ -159,8 +153,7 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      *        the {@link WorkerPool} which will be used to obtain the {@link NioWorker} that execute
      *        the I/O worker threads
      */
-    public NioServerSocketChannelFactory(
-            Executor bossExecutor, WorkerPool<NioWorker> workerPool) {
+    public NioServerSocketChannelFactory(Executor bossExecutor, WorkerPool<NioWorker> workerPool) {
         this(bossExecutor, 1 , workerPool);
     }
 

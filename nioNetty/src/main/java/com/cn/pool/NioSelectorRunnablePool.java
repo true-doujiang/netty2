@@ -28,8 +28,8 @@ public class NioSelectorRunnablePool {
 
     public NioSelectorRunnablePool(Executor boss, Executor worker) {
         initBoss(boss, 1); //也就是是迎接客人的selector只有一个
-        initWorker(worker, Runtime.getRuntime().availableProcessors() * 2);
-        //initWorker(worker, 1);
+        //initWorker(worker, Runtime.getRuntime().availableProcessors() * 2);
+        initWorker(worker, 2);
     }
 
     /**

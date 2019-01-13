@@ -25,13 +25,13 @@ public class NioServerWorker extends AbstractNioSelector implements Worker{
     }
 
     /**
-     * 加入一个新的socket客户端
+     * 加入一个新的 SocketChannel客户端
+     *
+     * 这个方法会被boss线程池调用，所以当前线程是boss线程池的
      */
     @Override
     public void registerNewChannelTask(SocketChannel socketChannel) {
         final Selector selector = this.selector;
-        //这个方法会被boss线程池调用，所以当前线程是boss线程池的
-        //System.out.println(Thread.currentThread().getName() + " registerNewChannelTask() selector = " + this.selector);
 
         Runnable task = new Runnable() {
             @Override
@@ -82,11 +82,15 @@ public class NioServerWorker extends AbstractNioSelector implements Worker{
                 failure = false;
             } catch (Exception e) {
                 //客户端断开时会有异常信息
-                //e.printStackTrace();
+                e.printStackTrace();
             }
 
             //判断是否连接已断开
             if (len <= 0 || failure) {
+                //TODO
+                /**
+                 * cancel() 取消，但是SocketChannel并没有关闭掉吧？？
+                 */
                 key.cancel();
                 System.out.println(Thread.currentThread().getName() + " 客户端 " + channel.getRemoteAddress()+ " 断开连接");
             } else {
