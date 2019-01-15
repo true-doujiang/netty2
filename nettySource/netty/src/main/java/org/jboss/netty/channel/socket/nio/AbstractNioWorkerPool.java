@@ -56,13 +56,17 @@ public abstract class AbstractNioWorkerPool<E extends AbstractNioWorker>
         this(workerExecutor, workerCount, true);
     }
 
+    /**
+     * @desc:
+     * @param: workerExecutor Worker线程池
+     * @return:
+     */
     AbstractNioWorkerPool(Executor workerExecutor, int workerCount, boolean autoInit) {
         if (workerExecutor == null) {
             throw new NullPointerException("workerExecutor");
         }
         if (workerCount <= 0) {
-            throw new IllegalArgumentException(
-                    "workerCount (" + workerCount + ") " + "must be a positive integer.");
+            throw new IllegalArgumentException("workerCount (" + workerCount + ") " + "must be a positive integer.");
         }
         workers = new AbstractNioWorker[workerCount];
         this.workerExecutor = workerExecutor;
@@ -71,12 +75,17 @@ public abstract class AbstractNioWorkerPool<E extends AbstractNioWorker>
         }
     }
 
+    /**
+     * @desc: 初始化Worker[] 放在NioWorkerPool.workers中
+     * @param:
+     */
     protected void init() {
         if (!initialized.compareAndSet(false, true)) {
             throw new IllegalStateException("initialized already");
         }
 
         for (int i = 0; i < workers.length; i++) {
+            // 具体怎么创建Worker由子类实现
             workers[i] = newWorker(workerExecutor);
         }
 

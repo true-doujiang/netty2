@@ -39,6 +39,10 @@ import static org.jboss.netty.channel.Channels.*;
 /**
  * Boss implementation which handles accepting of new connections
  */
+/**
+ * @author youhh
+ * @desc Boss 负责新客户端的连接
+ */
 public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     NioServerBoss(Executor bossExecutor) {
@@ -114,8 +118,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
                 // Closed as requested.
             } catch (Throwable t) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(
-                            "Failed to accept a connection.", t);
+                    logger.warn("Failed to accept a connection.", t);
                 }
 
                 try {
@@ -127,12 +130,10 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         }
     }
 
-    private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket,
-                                         Thread currentThread) {
+    private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket, Thread currentThread) {
         try {
             ChannelSink sink = parent.getPipeline().getSink();
-            ChannelPipeline pipeline =
-                    parent.getConfig().getPipelineFactory().getPipeline();
+            ChannelPipeline pipeline = parent.getConfig().getPipelineFactory().getPipeline();
             NioWorker worker = parent.workerPool.nextWorker();
             worker.register(new NioAcceptedSocketChannel(
                     parent.getFactory(), pipeline, parent, sink
@@ -140,17 +141,14 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
                     worker, currentThread), null);
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
-                logger.warn(
-                        "Failed to initialize an accepted socket.", e);
+                logger.warn("Failed to initialize an accepted socket.", e);
             }
 
             try {
                 acceptedSocket.close();
             } catch (IOException e2) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(
-                            "Failed to close a partially accepted socket.",
-                            e2);
+                    logger.warn("Failed to close a partially accepted socket.", e2);
                 }
             }
         }
@@ -165,8 +163,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     @Override
     protected ThreadRenamingRunnable newThreadRenamingRunnable(int id, ThreadNameDeterminer determiner) {
-        return new ThreadRenamingRunnable(this,
-                "New I/O server boss #" + id, determiner);
+        return new ThreadRenamingRunnable(this, "New I/O server boss #" + id, determiner);
     }
 
     @Override
@@ -179,8 +176,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         private final ChannelFuture future;
         private final SocketAddress localAddress;
 
-        public RegisterTask(final NioServerSocketChannel channel, final ChannelFuture future,
-                            final SocketAddress localAddress) {
+        public RegisterTask(final NioServerSocketChannel channel, final ChannelFuture future, final SocketAddress localAddress) {
             this.channel = channel;
             this.future = future;
             this.localAddress = localAddress;

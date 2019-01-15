@@ -29,11 +29,9 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  */
 public class ThreadRenamingRunnable implements Runnable {
 
-    private static final InternalLogger logger =
-        InternalLoggerFactory.getInstance(ThreadRenamingRunnable.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(ThreadRenamingRunnable.class);
 
-    private static volatile ThreadNameDeterminer threadNameDeterminer =
-        ThreadNameDeterminer.PROPOSED;
+    private static volatile ThreadNameDeterminer threadNameDeterminer = ThreadNameDeterminer.PROPOSED;
     private final ThreadNameDeterminer determiner;
 
     /**
@@ -97,13 +95,13 @@ public class ThreadRenamingRunnable implements Runnable {
                 currentThread.setName(newThreadName);
                 renamed = true;
             } catch (SecurityException e) {
-                logger.debug(
-                        "Failed to rename a thread " +
-                        "due to security restriction.", e);
+                logger.debug("Failed to rename a thread due to security restriction.", e);
             }
         }
 
-        // Run the actual runnable and revert the name back when it ends.
+        /**
+         *  Run the actual runnable and revert the name back when it ends.
+         */
         try {
             runnable.run();
         } finally {
@@ -124,8 +122,7 @@ public class ThreadRenamingRunnable implements Runnable {
                 nameDeterminer = getThreadNameDeterminer();
             }
             newThreadName =
-                nameDeterminer.determineThreadName(
-                        currentThreadName, proposedThreadName);
+                nameDeterminer.determineThreadName(currentThreadName, proposedThreadName);
         } catch (Throwable t) {
             logger.warn("Failed to determine the thread name", t);
         }

@@ -79,6 +79,17 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         close(ch, succeededFuture(ch));
     }
 
+    /**
+     *  AbstractNioSelector() {
+     *      ...
+     *      openSelector();   这里直接启动当前Worker了
+     *  }
+     *  把当前Worker 包含进去，并启动当前Worker
+     *
+     * @param id
+     * @param determiner
+     * @return
+     */
     @Override
     protected ThreadRenamingRunnable newThreadRenamingRunnable(int id, ThreadNameDeterminer determiner) {
         return new ThreadRenamingRunnable(this, "New I/O worker #" + id, determiner);

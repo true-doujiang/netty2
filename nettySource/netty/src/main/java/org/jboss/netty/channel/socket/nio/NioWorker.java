@@ -33,6 +33,10 @@ import java.util.concurrent.Executor;
 
 import static org.jboss.netty.channel.Channels.*;
 
+/**
+ * @author youhh
+ * @desc Worker 负责nio读写
+ */
 public class NioWorker extends AbstractNioWorker {
 
     private final SocketReceiveBufferAllocator recvBufferPool = new SocketReceiveBufferAllocator();
@@ -41,6 +45,11 @@ public class NioWorker extends AbstractNioWorker {
         super(executor);
     }
 
+    /**
+     *
+     * @param executor Worker线程池
+     * @param determiner
+     */
     public NioWorker(Executor executor, ThreadNameDeterminer determiner) {
         super(executor, determiner);
     }
@@ -122,8 +131,7 @@ public class NioWorker extends AbstractNioWorker {
         private final ChannelFuture future;
         private final boolean server;
 
-        RegisterTask(
-                NioSocketChannel channel, ChannelFuture future, boolean server) {
+        RegisterTask(NioSocketChannel channel, ChannelFuture future, boolean server) {
 
             this.channel = channel;
             this.future = future;
@@ -147,8 +155,7 @@ public class NioWorker extends AbstractNioWorker {
                     channel.channel.configureBlocking(false);
                 }
 
-                channel.channel.register(
-                        selector, channel.getInternalInterestOps(), channel);
+                channel.channel.register(selector, channel.getInternalInterestOps(), channel);
 
                 if (future != null) {
                     channel.setConnected();
@@ -165,8 +172,7 @@ public class NioWorker extends AbstractNioWorker {
                 }
                 close(channel, succeededFuture(channel));
                 if (!(e instanceof ClosedChannelException)) {
-                    throw new ChannelException(
-                            "Failed to register a socket to the selector.", e);
+                    throw new ChannelException("Failed to register a socket to the selector.", e);
                 }
             }
         }

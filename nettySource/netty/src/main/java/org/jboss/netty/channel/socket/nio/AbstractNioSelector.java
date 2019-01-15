@@ -40,6 +40,11 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ * @author youhh
+ * @desc 我可以很牛逼的  Boss 、 Worker 都要集成我，主体框架逻辑都在我这里
+ */
 abstract class AbstractNioSelector implements NioSelector {
 
     private static final AtomicInteger nextId = new AtomicInteger();
@@ -49,10 +54,10 @@ abstract class AbstractNioSelector implements NioSelector {
     /**
      * Internal Netty logger.
      */
-    protected static final InternalLogger logger = InternalLoggerFactory
-            .getInstance(AbstractNioSelector.class);
+    protected static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractNioSelector.class);
 
-    private static final int CLEANUP_INTERVAL = 256; // XXX Hard-coded value, but won't need customization.
+    // XXX Hard-coded value, but won't need customization.
+    private static final int CLEANUP_INTERVAL = 256;
 
     /**
      * Executor used to execute {@link Runnable}s such as channel registration
@@ -86,7 +91,8 @@ abstract class AbstractNioSelector implements NioSelector {
 
     private final Queue<Runnable> taskQueue = new ConcurrentLinkedQueue<Runnable>();
 
-    private volatile int cancelledKeys; // should use AtomicInteger but we just need approximation
+    // should use AtomicInteger but we just need approximation
+    private volatile int cancelledKeys;
 
     private final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private volatile boolean shutdown;
@@ -95,8 +101,12 @@ abstract class AbstractNioSelector implements NioSelector {
         this(executor, null);
     }
 
+
     AbstractNioSelector(Executor executor, ThreadNameDeterminer determiner) {
         this.executor = executor;
+        /**
+         * 给Worker或者Boss 初始化一个selector
+         */
         openSelector(determiner);
     }
 
@@ -312,6 +322,9 @@ abstract class AbstractNioSelector implements NioSelector {
                 }
 
                 cancelledKeys = 0;
+                /**
+                 *
+                 */
                 processTaskQueue();
                 selector = this.selector; // processTaskQueue() can call rebuildSelector()
 
@@ -328,12 +341,14 @@ abstract class AbstractNioSelector implements NioSelector {
                     try {
                         selector.close();
                     } catch (IOException e) {
-                        logger.warn(
-                                "Failed to close a selector.", e);
+                        logger.warn("Failed to close a selector.", e);
                     }
                     shutdownLatch.countDown();
                     break;
                 } else {
+                    /**
+                     *
+                     */
                     process(selector);
                 }
             } catch (Throwable t) {
@@ -354,6 +369,7 @@ abstract class AbstractNioSelector implements NioSelector {
     /**
      * Start the {@link AbstractNioWorker} and return the {@link Selector} that will be used for
      * the {@link AbstractNioChannel}'s when they get registered
+     * 初始化selector
      */
     private void openSelector(ThreadNameDeterminer determiner) {
         try {
@@ -365,6 +381,9 @@ abstract class AbstractNioSelector implements NioSelector {
         // Start the worker thread with the new Selector.
         boolean success = false;
         try {
+            /**
+             *
+             */
             DeadLockProofWorker.start(executor, newThreadRenamingRunnable(id, determiner));
             success = true;
         } finally {
@@ -379,6 +398,7 @@ abstract class AbstractNioSelector implements NioSelector {
                 // The method will return to the caller at this point.
             }
         }
+
         assert selector != null && selector.isOpen();
     }
 

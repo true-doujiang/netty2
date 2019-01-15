@@ -39,9 +39,14 @@ import static org.jboss.netty.channel.Channels.*;
 /**
  * {@link Boss} implementation that handles the  connection attempts of clients
  */
+/**
+ * @author youhh
+ * @desc Boss 负责新客户端的连接
+ */
 public final class NioClientBoss extends AbstractNioSelector implements Boss {
 
     private final TimerTask wakeupTask = new TimerTask() {
+
         public void run(Timeout timeout) throws Exception {
             // This is needed to prevent a possible race that can lead to a NPE
             // when the selector is closed before this is run
