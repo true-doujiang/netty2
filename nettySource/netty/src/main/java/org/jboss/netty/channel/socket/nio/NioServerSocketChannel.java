@@ -31,31 +31,47 @@ import org.jboss.netty.channel.socket.ServerSocketChannelConfig;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
+/**
+ * nio 的 ServerSocketChannel 的包装对象
+ *
+ */
 class NioServerSocketChannel extends AbstractServerChannel
                              implements org.jboss.netty.channel.socket.ServerSocketChannel {
 
-    private static final InternalLogger logger =
-        InternalLoggerFactory.getInstance(NioServerSocketChannel.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioServerSocketChannel.class);
 
+    /**
+     * nio 的 ServerSocketChannel
+     */
     final ServerSocketChannel socket;
     final Boss boss;
     final WorkerPool<NioWorker> workerPool;
 
     private final ServerSocketChannelConfig config;
 
+    /**
+     * NioServerSocketChannelFactory.newChannel() 中调用
+     * @param factory
+     * @param pipeline
+     * @param sink
+     * @param boss
+     * @param workerPool
+     */
     NioServerSocketChannel(
             ChannelFactory factory,
             ChannelPipeline pipeline,
-            ChannelSink sink, Boss boss, WorkerPool<NioWorker> workerPool) {
+            ChannelSink sink,
+            Boss boss,
+            WorkerPool<NioWorker> workerPool) {
 
         super(factory, pipeline, sink);
+
         this.boss = boss;
         this.workerPool = workerPool;
         try {
             socket = ServerSocketChannel.open();
         } catch (IOException e) {
-            throw new ChannelException(
-                    "Failed to open a server socket.", e);
+            throw new ChannelException("Failed to open a server socket.", e);
         }
 
         try {
@@ -65,8 +81,7 @@ class NioServerSocketChannel extends AbstractServerChannel
                 socket.close();
             } catch (IOException e2) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(
-                            "Failed to close a partially initialized socket.", e2);
+                    logger.warn("Failed to close a partially initialized socket.", e2);
                 }
             }
 
@@ -75,6 +90,7 @@ class NioServerSocketChannel extends AbstractServerChannel
 
         config = new DefaultServerSocketChannelConfig(socket.socket());
 
+        // 激活事件  // TODO
         fireChannelOpen(this);
     }
 

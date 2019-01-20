@@ -29,11 +29,9 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  */
 public class ThreadRenamingRunnable implements Runnable {
 
-    private static final InternalLogger logger =
-        InternalLoggerFactory.getInstance(ThreadRenamingRunnable.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(ThreadRenamingRunnable.class);
 
-    private static volatile ThreadNameDeterminer threadNameDeterminer =
-        ThreadNameDeterminer.PROPOSED;
+    private static volatile ThreadNameDeterminer threadNameDeterminer = ThreadNameDeterminer.PROPOSED;
     private final ThreadNameDeterminer determiner;
 
     /**
@@ -61,6 +59,9 @@ public class ThreadRenamingRunnable implements Runnable {
         ThreadRenamingRunnable.threadNameDeterminer = threadNameDeterminer;
     }
 
+    /**
+     * 当前Worker
+     */
     private final Runnable runnable;
     private final String proposedThreadName;
 
@@ -85,6 +86,9 @@ public class ThreadRenamingRunnable implements Runnable {
         this(runnable, proposedThreadName, null);
     }
 
+    /**
+     *
+     */
     public void run() {
         final Thread currentThread = Thread.currentThread();
         final String oldThreadName = currentThread.getName();
@@ -97,14 +101,15 @@ public class ThreadRenamingRunnable implements Runnable {
                 currentThread.setName(newThreadName);
                 renamed = true;
             } catch (SecurityException e) {
-                logger.debug(
-                        "Failed to rename a thread " +
-                        "due to security restriction.", e);
+                logger.debug("Failed to rename a thread " + "due to security restriction.", e);
             }
         }
 
         // Run the actual runnable and revert the name back when it ends.
         try {
+            /**
+             * 运行当前Worker.run()
+             */
             runnable.run();
         } finally {
             if (renamed) {
@@ -123,9 +128,7 @@ public class ThreadRenamingRunnable implements Runnable {
             if (nameDeterminer == null) {
                 nameDeterminer = getThreadNameDeterminer();
             }
-            newThreadName =
-                nameDeterminer.determineThreadName(
-                        currentThreadName, proposedThreadName);
+            newThreadName = nameDeterminer.determineThreadName(currentThreadName, proposedThreadName);
         } catch (Throwable t) {
             logger.warn("Failed to determine the thread name", t);
         }

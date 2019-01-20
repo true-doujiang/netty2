@@ -259,14 +259,19 @@ public class ServerBootstrap extends Bootstrap {
      * @return a new bound channel which accepts incoming connections
      *
      * @throws ChannelException
-     *         if failed to create a new channel and
-     *                      bind it to the local address
+     *         if failed to create a new channel and  bind it to the local address
+     *
      */
     public Channel bind(final SocketAddress localAddress) {
+
+        /**
+         *
+         */
         ChannelFuture future = bindAsync(localAddress);
 
         // Wait for the future.
         future.awaitUninterruptibly();
+
         if (!future.isSuccess()) {
             future.getChannel().close().awaitUninterruptibly();
             throw new ChannelException("Failed to bind to: " + localAddress, future.getCause());
@@ -317,45 +322,54 @@ public class ServerBootstrap extends Bootstrap {
         if (localAddress == null) {
             throw new NullPointerException("localAddress");
         }
+
         Binder binder = new Binder(localAddress);
         ChannelHandler parentHandler = getParentHandler();
 
         ChannelPipeline bossPipeline = pipeline();
         bossPipeline.addLast("binder", binder);
+
         if (parentHandler != null) {
             bossPipeline.addLast("userHandler", parentHandler);
         }
 
+        /**
+         *
+         */
         Channel channel = getFactory().newChannel(bossPipeline);
+
         final ChannelFuture bfuture = new DefaultChannelFuture(channel, false);
+
         binder.bindFuture.addListener(new ChannelFutureListener() {
+
             public void operationComplete(ChannelFuture future) throws Exception {
                 if (future.isSuccess()) {
+                    System.out.println(Thread.currentThread().getName() + " isSuccess");
                     bfuture.setSuccess();
                 } else {
+                    System.out.println(Thread.currentThread().getName() + " operationComplete");
                     // Call close on bind failure
                     bfuture.getChannel().close();
                     bfuture.setFailure(future.getCause());
                 }
             }
         });
+
         return bfuture;
     }
 
     private final class Binder extends SimpleChannelUpstreamHandler {
 
         private final SocketAddress localAddress;
-        private final Map<String, Object> childOptions =
-            new HashMap<String, Object>();
+        private final Map<String, Object> childOptions = new HashMap<String, Object>();
         private final DefaultChannelFuture bindFuture = new DefaultChannelFuture(null, false);
+
         Binder(SocketAddress localAddress) {
             this.localAddress = localAddress;
         }
 
         @Override
-        public void channelOpen(
-                ChannelHandlerContext ctx,
-                ChannelStateEvent evt) {
+        public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent evt) {
 
             try {
                 evt.getChannel().getConfig().setPipelineFactory(getPipelineFactory());
@@ -365,9 +379,7 @@ public class ServerBootstrap extends Bootstrap {
                 Map<String, Object> parentOptions = new HashMap<String, Object>();
                 for (Entry<String, Object> e: allOptions.entrySet()) {
                     if (e.getKey().startsWith("child.")) {
-                        childOptions.put(
-                                e.getKey().substring(6),
-                                e.getValue());
+                        childOptions.put(e.getKey().substring(6), e.getValue());
                     } else if (!"pipelineFactory".equals(e.getKey())) {
                         parentOptions.put(e.getKey(), e.getValue());
                     }
@@ -391,9 +403,7 @@ public class ServerBootstrap extends Bootstrap {
         }
 
         @Override
-        public void childChannelOpen(
-                ChannelHandlerContext ctx,
-                ChildChannelStateEvent e) throws Exception {
+        public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
             // Apply child options.
             try {
                 e.getChildChannel().getConfig().setOptions(childOptions);
@@ -404,11 +414,11 @@ public class ServerBootstrap extends Bootstrap {
         }
 
         @Override
-        public void exceptionCaught(
-                ChannelHandlerContext ctx, ExceptionEvent e)
-                throws Exception {
+        public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
             bindFuture.setFailure(e.getCause());
             ctx.sendUpstream(e);
         }
     }
+
+
 }

@@ -50,15 +50,20 @@ public abstract class AbstractNioBossPool<E extends Boss>
         this(bossExecutor, bossCount, true);
     }
 
+    /**
+     * 创建 BossPool 并初始化bossCount个Boss
+     * @param bossExecutor
+     * @param bossCount
+     * @param autoInit
+     */
     AbstractNioBossPool(Executor bossExecutor, int bossCount, boolean autoInit) {
         if (bossExecutor == null) {
             throw new NullPointerException("bossExecutor");
         }
         if (bossCount <= 0) {
-            throw new IllegalArgumentException(
-                    "bossCount (" + bossCount + ") " +
-                            "must be a positive integer.");
+            throw new IllegalArgumentException("bossCount (" + bossCount + ") " + "must be a positive integer.");
         }
+        //
         bosses = new Boss[bossCount];
         this.bossExecutor = bossExecutor;
         if (autoInit) {
@@ -66,6 +71,9 @@ public abstract class AbstractNioBossPool<E extends Boss>
         }
     }
 
+    /**
+     * 初始化bossCount个Boss
+     */
     protected void init() {
         if (!initialized.compareAndSet(false, true)) {
             throw new IllegalStateException("initialized already");
@@ -81,14 +89,18 @@ public abstract class AbstractNioBossPool<E extends Boss>
     private void waitForBossThreads() {
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(INITIALIZATION_TIMEOUT);
         boolean warn = false;
+
         for (Boss boss: bosses) {
             if (!(boss instanceof AbstractNioSelector)) {
                 continue;
             }
 
+            System.out.println(Thread.currentThread().getName() + " AbstractNioBossPool boss = " + boss);
+
             AbstractNioSelector selector = (AbstractNioSelector) boss;
             long waitTime = deadline - System.nanoTime();
             try {
+
                 if (waitTime <= 0) {
                     if (selector.thread == null) {
                         warn = true;

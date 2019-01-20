@@ -64,7 +64,9 @@ public abstract class AbstractNioSelector implements Runnable{
     private void openSelector() {
         try {
             this.selector = Selector.open();
-            System.out.println(Thread.currentThread().getName() + " " + this + " 用 选择器 = " + this.selector);
+
+            String obj = this.getClass().getSimpleName().contains("Worker") ? "NioServerWorker" : "NioServerBoss";
+            System.out.println(Thread.currentThread().getName() + " 创建" + obj + " " + this + " 用 选择器 = " + this.selector);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create a selector.");
         }

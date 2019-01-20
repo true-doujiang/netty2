@@ -25,16 +25,13 @@ import java.nio.channels.Selector;
 import java.util.concurrent.TimeUnit;
 
 final class SelectorUtil {
-    private static final InternalLogger logger =
-        InternalLoggerFactory.getInstance(SelectorUtil.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(SelectorUtil.class);
 
     static final int DEFAULT_IO_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     static final long DEFAULT_SELECT_TIMEOUT = 500;
-    static final long SELECT_TIMEOUT =
-            SystemPropertyUtil.getLong("org.jboss.netty.selectTimeout", DEFAULT_SELECT_TIMEOUT);
+    static final long SELECT_TIMEOUT = SystemPropertyUtil.getLong("org.jboss.netty.selectTimeout", DEFAULT_SELECT_TIMEOUT);
     static final long SELECT_TIMEOUT_NANOS = TimeUnit.MILLISECONDS.toNanos(SELECT_TIMEOUT);
-    static final boolean EPOLL_BUG_WORKAROUND =
-            SystemPropertyUtil.getBoolean("org.jboss.netty.epollBugWorkaround", false);
+    static final boolean EPOLL_BUG_WORKAROUND = SystemPropertyUtil.getBoolean("org.jboss.netty.epollBugWorkaround", false);
 
     // Workaround for JDK NIO bug.
     //
@@ -59,18 +56,28 @@ final class SelectorUtil {
         }
     }
 
+    /**
+     * 创建一个nio Selector
+     * @return
+     * @throws IOException
+     */
     static Selector open() throws IOException {
         return Selector.open();
     }
 
+    /**
+     *
+     * @param selector
+     * @return
+     * @throws IOException
+     */
     static int select(Selector selector) throws IOException {
         try {
+            // 默认blocking 500ms
             return selector.select(SELECT_TIMEOUT);
         } catch (CancelledKeyException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug(
-                        CancelledKeyException.class.getSimpleName() +
-                        " raised by a Selector - JDK bug?", e);
+                logger.debug(CancelledKeyException.class.getSimpleName() + " raised by a Selector - JDK bug?", e);
             }
             // Harmless exception - log anyway
         }

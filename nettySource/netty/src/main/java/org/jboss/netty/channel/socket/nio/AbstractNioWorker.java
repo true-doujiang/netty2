@@ -40,9 +40,14 @@ import java.util.concurrent.Executor;
 
 import static org.jboss.netty.channel.Channels.*;
 
+/**
+ *  抽象Worker
+ */
 abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
+
     protected final SocketSendBufferPool sendBufferPool = new SocketSendBufferPool();
+
 
     AbstractNioWorker(Executor executor) {
         super(executor);
@@ -79,11 +84,20 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         close(ch, succeededFuture(ch));
     }
 
+    /**
+     * this : 当前Worker 对象
+     * @param id
+     * @param determiner
+     * @return
+     */
     @Override
     protected ThreadRenamingRunnable newThreadRenamingRunnable(int id, ThreadNameDeterminer determiner) {
         return new ThreadRenamingRunnable(this, "New I/O worker #" + id, determiner);
     }
 
+    /**
+     *
+     */
     @Override
     public void run() {
         super.run();
@@ -99,9 +113,11 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
         if (selectedKeys.isEmpty()) {
             return;
         }
+
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {
             SelectionKey k = i.next();
             i.remove();
+
             try {
                 int readyOps = k.readyOps();
                 if ((readyOps & SelectionKey.OP_READ) != 0 || readyOps == 0) {
@@ -225,9 +241,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
                         if (writtenBytes > 0) {
                             // Notify progress listeners if necessary.
-                            future.setProgress(
-                                    localWrittenBytes,
-                                    buf.writtenBytes(), buf.totalBytes());
+                            future.setProgress(localWrittenBytes, buf.writtenBytes(), buf.totalBytes());
                         }
                         break;
                     }
@@ -278,6 +292,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
             //     https://issues.jboss.org/browse/NETTY-410
             //
             if (open) {
+
                 if (addOpWrite) {
                     setOpWrite(channel);
                 } else if (removeOpWrite) {
@@ -518,6 +533,7 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
      * in read operations.
      *
      * @param k The selection key which contains the Selector registration information.
+     *
      */
     protected abstract boolean read(SelectionKey k);
 

@@ -409,8 +409,7 @@ public class DefaultChannelFuture implements ChannelFuture {
             l.operationComplete(this);
         } catch (Throwable t) {
             if (logger.isWarnEnabled()) {
-                logger.warn(
-                        "An exception was thrown by " +
+                logger.warn("An exception was thrown by " +
                         ChannelFutureListener.class.getSimpleName() + '.', t);
             }
         }
@@ -450,8 +449,7 @@ public class DefaultChannelFuture implements ChannelFuture {
             l.operationProgressed(this, amount, current, total);
         } catch (Throwable t) {
             if (logger.isWarnEnabled()) {
-                logger.warn(
-                        "An exception was thrown by " +
+                logger.warn("An exception was thrown by " +
                         ChannelFutureProgressListener.class.getSimpleName() + '.', t);
             }
         }

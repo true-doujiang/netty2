@@ -5,9 +5,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
@@ -18,7 +21,10 @@ import org.jboss.netty.handler.codec.string.StringEncoder;
  */
 public class Server {
 
+    public static ChannelGroup channelGroup = new DefaultChannelGroup();
+
 	public static void main(String[] args) {
+
 
 		//服务类
 		ServerBootstrap bootstrap = new ServerBootstrap();
@@ -29,7 +35,7 @@ public class Server {
 		ExecutorService boss = Executors.newCachedThreadPool();
 		ExecutorService worker = Executors.newCachedThreadPool();
 		
-		//设置niosocket工厂
+		//设置nio ServerSocket工厂
 		bootstrap.setFactory(new NioServerSocketChannelFactory(boss, worker));
 		
 		//设置管道的工厂
@@ -46,9 +52,14 @@ public class Server {
 				return pipeline;
 			}
 		});
-		
-		bootstrap.bind(new InetSocketAddress(9898));
-		
+
+        /**
+         * 正式启动netty
+         */
+		Channel channel = bootstrap.bind(new InetSocketAddress(9898));
+
+		Server.channelGroup.add(channel);
+
 		System.out.println("start!!!");
 		
 	}

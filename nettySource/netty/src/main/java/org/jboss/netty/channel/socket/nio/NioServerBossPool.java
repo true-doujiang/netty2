@@ -24,6 +24,7 @@ import java.util.concurrent.Executor;
  * Holds {@link NioServerBoss} instances to use
  */
 public class NioServerBossPool extends AbstractNioBossPool<NioServerBoss> {
+
     private final ThreadNameDeterminer determiner;
 
     /**

@@ -43,10 +43,7 @@ public abstract class AbstractServerChannel extends AbstractChannel implements S
      *        the sink which will receive downstream events from the pipeline
      *        and send upstream events to the pipeline
      */
-    protected AbstractServerChannel(
-            ChannelFactory factory,
-            ChannelPipeline pipeline,
-            ChannelSink sink) {
+    protected AbstractServerChannel(ChannelFactory factory, ChannelPipeline pipeline, ChannelSink sink) {
         super(null, factory, pipeline, sink);
     }
 

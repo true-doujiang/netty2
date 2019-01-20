@@ -111,7 +111,8 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      *        the {@link Executor} which will execute the I/O worker threads
      */
     public NioServerSocketChannelFactory(Executor bossExecutor, Executor workerExecutor) {
-        this(bossExecutor, workerExecutor, getMaxThreads(workerExecutor));
+//        this(bossExecutor, workerExecutor, getMaxThreads(workerExecutor));
+        this(bossExecutor, workerExecutor, 1);
     }
 
     /**
@@ -168,13 +169,12 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
      *        the {@link WorkerPool} which will be used to obtain the {@link NioWorker} that execute
      *        the I/O worker threads
      */
-    public NioServerSocketChannelFactory(
-            Executor bossExecutor, int bossCount, WorkerPool<NioWorker> workerPool) {
+    public NioServerSocketChannelFactory(Executor bossExecutor, int bossCount, WorkerPool<NioWorker> workerPool) {
         this(new NioServerBossPool(bossExecutor, bossCount, null), workerPool);
     }
 
     /**
-     * Create a new instance.
+     * Create a new instance. 最终还是调用这个构造器 初始化bossPool，workerPool
      *
      * @param bossPool
      *        the {@link BossPool} which will be used to obtain the {@link NioServerBoss} that execute
@@ -192,9 +192,15 @@ public class NioServerSocketChannelFactory implements ServerSocketChannelFactory
         }
         this.bossPool = bossPool;
         this.workerPool = workerPool;
+        //sink 淹没; 下落; 退去; 渐渐进入;
         sink = new NioServerSocketPipelineSink();
     }
 
+    /**
+     * 创建一个nio 的 ServerSocketChannel 的包装对象
+     * @param pipeline
+     * @return
+     */
     public ServerSocketChannel newChannel(ChannelPipeline pipeline) {
         return new NioServerSocketChannel(this, pipeline, sink, bossPool.nextBoss(), workerPool);
     }

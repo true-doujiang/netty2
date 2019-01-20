@@ -194,6 +194,12 @@ public abstract class AbstractChannel implements Channel {
         return closeFuture.setClosed();
     }
 
+    /**
+     *
+     * @param localAddress where to bind
+     *
+     * @return
+     */
     public ChannelFuture bind(SocketAddress localAddress) {
         return Channels.bind(this, localAddress);
     }

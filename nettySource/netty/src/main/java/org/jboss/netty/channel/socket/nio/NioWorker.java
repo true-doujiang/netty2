@@ -33,6 +33,9 @@ import java.util.concurrent.Executor;
 
 import static org.jboss.netty.channel.Channels.*;
 
+/**
+ * Worker
+ */
 public class NioWorker extends AbstractNioWorker {
 
     private final SocketReceiveBufferAllocator recvBufferPool = new SocketReceiveBufferAllocator();
@@ -43,6 +46,15 @@ public class NioWorker extends AbstractNioWorker {
 
     public NioWorker(Executor executor, ThreadNameDeterminer determiner) {
         super(executor, determiner);
+    }
+
+    /**
+     * Worker对象run() 直接就执行父类的run()
+     */
+    @Override
+    public void run() {
+        super.run();
+        recvBufferPool.releaseExternalResources();
     }
 
     @Override
@@ -58,6 +70,9 @@ public class NioWorker extends AbstractNioWorker {
         int readBytes = 0;
         boolean failure = true;
 
+        /**
+         * 读取数据放到ByteBuffer，所以默认不见解码器获取到的就是ByteBuffer数据
+         */
         ByteBuffer bb = recvBufferPool.get(predictedRecvBufSize).order(bufferFactory.getDefaultOrder());
         try {
             while ((ret = ch.read(bb)) > 0) {
@@ -83,6 +98,9 @@ public class NioWorker extends AbstractNioWorker {
             // Update the predictor.
             predictor.previousReceiveBufferSize(readBytes);
 
+            /**
+             * 激活事件
+             */
             // Fire the event.
             fireMessageReceived(channel, buffer);
         }
@@ -102,6 +120,9 @@ public class NioWorker extends AbstractNioWorker {
         final Thread workerThread = thread;
         if (currentThread != workerThread) {
             if (channel.writeTaskInTaskQueue.compareAndSet(false, true)) {
+                /**
+                 *
+                 */
                 registerTask(channel.writeTask);
             }
 
@@ -111,20 +132,29 @@ public class NioWorker extends AbstractNioWorker {
         return false;
     }
 
+    /**
+     * AbstractNioSelector中的抽象方法
+     *
+     * @param channel
+     * @param future
+     * @return
+     */
     @Override
     protected Runnable createRegisterTask(Channel channel, ChannelFuture future) {
         boolean server = !(channel instanceof NioClientSocketChannel);
         return new RegisterTask((NioSocketChannel) channel, future, server);
     }
 
+    /**
+     * 内部类
+     */
     private final class RegisterTask implements Runnable {
+
         private final NioSocketChannel channel;
         private final ChannelFuture future;
         private final boolean server;
 
-        RegisterTask(
-                NioSocketChannel channel, ChannelFuture future, boolean server) {
-
+        RegisterTask(NioSocketChannel channel, ChannelFuture future, boolean server) {
             this.channel = channel;
             this.future = future;
             this.server = server;
@@ -147,8 +177,7 @@ public class NioWorker extends AbstractNioWorker {
                     channel.channel.configureBlocking(false);
                 }
 
-                channel.channel.register(
-                        selector, channel.getInternalInterestOps(), channel);
+                channel.channel.register(selector, channel.getInternalInterestOps(), channel);
 
                 if (future != null) {
                     channel.setConnected();
@@ -165,16 +194,13 @@ public class NioWorker extends AbstractNioWorker {
                 }
                 close(channel, succeededFuture(channel));
                 if (!(e instanceof ClosedChannelException)) {
-                    throw new ChannelException(
-                            "Failed to register a socket to the selector.", e);
+                    throw new ChannelException("Failed to register a socket to the selector.", e);
                 }
             }
         }
     }
 
-    @Override
-    public void run() {
-        super.run();
-        recvBufferPool.releaseExternalResources();
-    }
+
+
+
 }

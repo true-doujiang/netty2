@@ -44,6 +44,9 @@ import static org.jboss.netty.channel.Channels.*;
  */
 public class Bootstrap implements ExternalResourceReleasable {
 
+    /**
+     *
+     */
     private volatile ChannelFactory factory;
     private volatile ChannelPipeline pipeline = pipeline();
     private volatile ChannelPipelineFactory pipelineFactory = pipelineFactory(pipeline);
@@ -76,8 +79,7 @@ public class Bootstrap implements ExternalResourceReleasable {
     public ChannelFactory getFactory() {
         ChannelFactory factory = this.factory;
         if (factory == null) {
-            throw new IllegalStateException(
-                    "factory is not set yet.");
+            throw new IllegalStateException("factory is not set yet.");
         }
         return factory;
     }
@@ -95,8 +97,7 @@ public class Bootstrap implements ExternalResourceReleasable {
             throw new NullPointerException("factory");
         }
         if (this.factory != null) {
-            throw new IllegalStateException(
-                    "factory can't change once set.");
+            throw new IllegalStateException("factory can't change once set.");
         }
         this.factory = factory;
     }

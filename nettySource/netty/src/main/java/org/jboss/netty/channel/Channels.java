@@ -166,7 +166,7 @@ public final class Channels {
         if (channel.getParent() != null) {
             fireChildChannelStateChanged(channel.getParent(), channel);
         }
-
+        // TODO
         channel.getPipeline().sendUpstream(
                 new UpstreamChannelStateEvent(
                         channel, ChannelState.OPEN, Boolean.TRUE));
@@ -558,8 +558,7 @@ public final class Channels {
             throw new NullPointerException("localAddress");
         }
         ChannelFuture future = future(channel);
-        channel.getPipeline().sendDownstream(new DownstreamChannelStateEvent(
-                channel, future, ChannelState.BOUND, localAddress));
+        channel.getPipeline().sendDownstream(new DownstreamChannelStateEvent(channel, future, ChannelState.BOUND, localAddress));
         return future;
     }
 

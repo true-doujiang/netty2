@@ -25,10 +25,18 @@ import org.jboss.netty.channel.MessageEvent;
 
 import java.net.SocketAddress;
 
+/**
+ *
+ */
 class NioServerSocketPipelineSink extends AbstractNioChannelSink {
 
-    public void eventSunk(
-            ChannelPipeline pipeline, ChannelEvent e) throws Exception {
+    /**
+     *
+     * @param pipeline
+     * @param e
+     * @throws Exception
+     */
+    public void eventSunk(ChannelPipeline pipeline, ChannelEvent e) throws Exception {
         Channel channel = e.getChannel();
         if (channel instanceof NioServerSocketChannel) {
             handleServerSocket(e);
@@ -43,27 +51,33 @@ class NioServerSocketPipelineSink extends AbstractNioChannelSink {
         }
 
         ChannelStateEvent event = (ChannelStateEvent) e;
-        NioServerSocketChannel channel =
-            (NioServerSocketChannel) event.getChannel();
+
+        NioServerSocketChannel channel = (NioServerSocketChannel) event.getChannel();
+
         ChannelFuture future = event.getFuture();
+
         ChannelState state = event.getState();
+
         Object value = event.getValue();
 
         switch (state) {
-        case OPEN:
-            if (Boolean.FALSE.equals(value)) {
-                ((NioServerBoss) channel.boss).close(channel, future);
-            }
-            break;
-        case BOUND:
-            if (value != null) {
-                ((NioServerBoss) channel.boss).bind(channel, future, (SocketAddress) value);
-            } else {
-                ((NioServerBoss) channel.boss).close(channel, future);
-            }
-            break;
-        default:
-            break;
+            case OPEN:
+                if (Boolean.FALSE.equals(value)) {
+
+                    ((NioServerBoss) channel.boss).close(channel, future);
+                }
+                break;
+            case BOUND:
+                if (value != null) {
+
+                    ((NioServerBoss) channel.boss).bind(channel, future, (SocketAddress) value);
+                } else {
+
+                    ((NioServerBoss) channel.boss).close(channel, future);
+                }
+                break;
+            default:
+                break;
         }
     }
 

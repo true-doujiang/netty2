@@ -15,10 +15,7 @@
  */
 package org.jboss.netty.channel.socket.nio;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelSink;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.util.ThreadNameDeterminer;
 import org.jboss.netty.util.ThreadRenamingRunnable;
 
@@ -49,8 +46,13 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         super(bossExecutor, determiner);
     }
 
-    void bind(final NioServerSocketChannel channel, final ChannelFuture future,
-              final SocketAddress localAddress) {
+    /**
+     *
+     * @param channel
+     * @param future
+     * @param localAddress
+     */
+    void bind(final NioServerSocketChannel channel, final ChannelFuture future, final SocketAddress localAddress) {
         registerTask(new RegisterTask(channel, future, localAddress));
     }
 
@@ -83,6 +85,10 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         }
     }
 
+    /**
+     * Boss处理新客户端的连接
+     * @param selector
+     */
     @Override
     protected void process(Selector selector) {
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -92,15 +98,27 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         for (Iterator<SelectionKey> i = selectedKeys.iterator(); i.hasNext();) {
             SelectionKey k = i.next();
             i.remove();
+
+            /**
+             *  SelectionKey什么时候添加的附件呢？？
+             */
             NioServerSocketChannel channel = (NioServerSocketChannel) k.attachment();
 
             try {
                 // accept connections in a for loop until no new connection is ready
                 for (;;) {
+
+                    /**
+                     *
+                     */
                     SocketChannel acceptedSocket = channel.socket.accept();
                     if (acceptedSocket == null) {
                         break;
                     }
+
+                    /**
+                     * 给Worker的队列添加一个任务
+                     */
                     registerAcceptedChannel(channel, acceptedSocket, thread);
                 }
             } catch (CancelledKeyException e) {
@@ -114,8 +132,7 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
                 // Closed as requested.
             } catch (Throwable t) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(
-                            "Failed to accept a connection.", t);
+                    logger.warn("Failed to accept a connection.", t);
                 }
 
                 try {
@@ -127,60 +144,85 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
         }
     }
 
-    private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket,
-                                         Thread currentThread) {
+    /**
+     * 给Worker的队列添加一个任务
+     * @param parent
+     * @param acceptedSocket
+     * @param currentThread
+     */
+    private static void registerAcceptedChannel(NioServerSocketChannel parent, SocketChannel acceptedSocket, Thread currentThread) {
         try {
             ChannelSink sink = parent.getPipeline().getSink();
-            ChannelPipeline pipeline =
-                    parent.getConfig().getPipelineFactory().getPipeline();
+            ChannelPipeline pipeline = parent.getConfig().getPipelineFactory().getPipeline();
+            /**
+             * 选一个Worker
+             */
             NioWorker worker = parent.workerPool.nextWorker();
-            worker.register(new NioAcceptedSocketChannel(
-                    parent.getFactory(), pipeline, parent, sink
-                    , acceptedSocket,
-                    worker, currentThread), null);
+
+            ChannelFactory factory = parent.getFactory();
+            worker.register(new NioAcceptedSocketChannel(factory, pipeline, parent, sink, acceptedSocket, worker, currentThread), null);
+
         } catch (Exception e) {
             if (logger.isWarnEnabled()) {
-                logger.warn(
-                        "Failed to initialize an accepted socket.", e);
+                logger.warn("Failed to initialize an accepted socket.", e);
             }
-
             try {
                 acceptedSocket.close();
             } catch (IOException e2) {
                 if (logger.isWarnEnabled()) {
-                    logger.warn(
-                            "Failed to close a partially accepted socket.",
-                            e2);
+                    logger.warn("Failed to close a partially accepted socket.", e2);
                 }
             }
         }
     }
 
+    /**
+     *
+     * @param selector
+     * @return
+     * @throws IOException
+     */
     @Override
     protected int select(Selector selector) throws IOException {
         // Just do a blocking select without any timeout
         // as this thread does not execute anything else.
+        System.out.println(Thread.currentThread().getName() + " Boss = " + this + " selector = " + selector);
         return selector.select();
     }
 
+    /**
+     *
+     * @param id
+     * @param determiner
+     * @return
+     */
     @Override
     protected ThreadRenamingRunnable newThreadRenamingRunnable(int id, ThreadNameDeterminer determiner) {
-        return new ThreadRenamingRunnable(this,
-                "New I/O server boss #" + id, determiner);
+        return new ThreadRenamingRunnable(this, "New I/O server boss #" + id, determiner);
     }
 
+    /**
+     * AbstractNioSelector中的抽象方法
+     *
+     * @param channel
+     * @param future
+     * @return
+     */
     @Override
     protected Runnable createRegisterTask(Channel channel, ChannelFuture future) {
         return new RegisterTask((NioServerSocketChannel) channel, future, null);
     }
 
+    /**
+     *
+     */
     private final class RegisterTask implements Runnable {
+
         private final NioServerSocketChannel channel;
         private final ChannelFuture future;
         private final SocketAddress localAddress;
 
-        public RegisterTask(final NioServerSocketChannel channel, final ChannelFuture future,
-                            final SocketAddress localAddress) {
+        public RegisterTask(final NioServerSocketChannel channel, final ChannelFuture future, final SocketAddress localAddress) {
             this.channel = channel;
             this.future = future;
             this.localAddress = localAddress;
@@ -208,4 +250,6 @@ public final class NioServerBoss extends AbstractNioSelector implements Boss {
             }
         }
     }
+
+
 }
