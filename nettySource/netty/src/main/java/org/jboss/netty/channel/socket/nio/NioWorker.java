@@ -35,6 +35,8 @@ import static org.jboss.netty.channel.Channels.*;
 
 /**
  * Worker
+ * @author youhh
+ * @desc Worker 负责nio读写
  */
 public class NioWorker extends AbstractNioWorker {
 
@@ -44,6 +46,11 @@ public class NioWorker extends AbstractNioWorker {
         super(executor);
     }
 
+    /**
+     *
+     * @param executor Worker线程池
+     * @param determiner
+     */
     public NioWorker(Executor executor, ThreadNameDeterminer determiner) {
         super(executor, determiner);
     }

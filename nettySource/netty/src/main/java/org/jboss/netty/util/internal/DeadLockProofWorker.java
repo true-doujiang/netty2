@@ -37,7 +37,9 @@ public final class DeadLockProofWorker {
 
         parent.execute(new Runnable() {
             public void run() {
+                //
                 PARENT.set(parent);
+
                 try {
                     /**
                      *

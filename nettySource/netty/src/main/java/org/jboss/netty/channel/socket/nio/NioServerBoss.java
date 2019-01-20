@@ -36,6 +36,10 @@ import static org.jboss.netty.channel.Channels.*;
 /**
  * Boss implementation which handles accepting of new connections
  */
+/**
+ * @author youhh
+ * @desc Boss 负责新客户端的连接
+ */
 public final class NioServerBoss extends AbstractNioSelector implements Boss {
 
     NioServerBoss(Executor bossExecutor) {

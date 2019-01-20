@@ -40,6 +40,11 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ * @author youhh
+ * @desc 我可以很牛逼的  Boss 、 Worker 都要集成我，主体框架逻辑都在我这里
+ */
 abstract class AbstractNioSelector implements NioSelector {
 
     private static final AtomicInteger nextId = new AtomicInteger();
@@ -51,7 +56,8 @@ abstract class AbstractNioSelector implements NioSelector {
      */
     protected static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractNioSelector.class);
 
-    private static final int CLEANUP_INTERVAL = 256; // XXX Hard-coded value, but won't need customization.
+    // XXX Hard-coded value, but won't need customization.
+    private static final int CLEANUP_INTERVAL = 256;
 
     /**
      * Executor used to execute {@link Runnable}s such as channel registration
@@ -99,8 +105,12 @@ abstract class AbstractNioSelector implements NioSelector {
         this(executor, null);
     }
 
+
     AbstractNioSelector(Executor executor, ThreadNameDeterminer determiner) {
         this.executor = executor;
+        /**
+         * 给Worker或者Boss 初始化一个selector
+         */
         openSelector(determiner);
     }
 
@@ -290,11 +300,13 @@ abstract class AbstractNioSelector implements NioSelector {
                 }
                 cancelledKeys = 0;
 
+
                 /**
                  * 第三 队列处理
                  */
                 System.out.println(Thread.currentThread().getName() + " processTaskQueue ");
                 processTaskQueue();
+
 
                 // processTaskQueue() can call rebuildSelector()
                 selector = this.selector;
@@ -317,7 +329,6 @@ abstract class AbstractNioSelector implements NioSelector {
                     shutdownLatch.countDown();
                     break;
                 } else {
-
                     /**
                      * 第四 业务处理
                      */
@@ -339,9 +350,6 @@ abstract class AbstractNioSelector implements NioSelector {
     }
 
 
-    /**
-     *
-     */
     private void processTaskQueue() {
         for (;;) {
             final Runnable task = taskQueue.poll();

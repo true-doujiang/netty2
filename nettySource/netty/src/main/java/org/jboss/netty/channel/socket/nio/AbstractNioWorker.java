@@ -86,6 +86,12 @@ abstract class AbstractNioWorker extends AbstractNioSelector implements Worker {
 
     /**
      * this : 当前Worker 对象
+     *  AbstractNioSelector() {
+     *      ...
+     *      openSelector();   这里直接启动当前Worker了
+     *  }
+     *  把当前Worker 包含进去，并启动当前Worker
+     *
      * @param id
      * @param determiner
      * @return

@@ -101,11 +101,13 @@ public class ThreadRenamingRunnable implements Runnable {
                 currentThread.setName(newThreadName);
                 renamed = true;
             } catch (SecurityException e) {
-                logger.debug("Failed to rename a thread " + "due to security restriction.", e);
+                logger.debug("Failed to rename a thread due to security restriction.", e);
             }
         }
 
-        // Run the actual runnable and revert the name back when it ends.
+        /**
+         *  Run the actual runnable and revert the name back when it ends.
+         */
         try {
             /**
              * 运行当前Worker.run()
