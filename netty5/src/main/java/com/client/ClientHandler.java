@@ -8,8 +8,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author -琴兽-
  */
 public class ClientHandler extends SimpleChannelInboundHandler<String>{
+
     @Override
     protected void messageReceived(ChannelHandlerContext ctx, String msg) throws Exception {
-        System.out.println(Thread.currentThread().getName() + " ip = " + ctx.channel().remoteAddress() + "  id = " + ctx.channel().id() + " 客户端收到消息: " + msg);
+        System.out.println(Thread.currentThread().getName()
+                + " ip = " + ctx.channel().remoteAddress() + "  id = " + ctx.channel().id() + " 客户端收到消息: " + msg);
     }
+
 }

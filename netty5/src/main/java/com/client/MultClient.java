@@ -55,7 +55,7 @@ public class MultClient {
         });
 
         for (int i=0; i<count; i++) {
-            ChannelFuture future = bootstrap.connect("127.0.0.1", 10101);
+            ChannelFuture future = bootstrap.connect("127.0.0.1", 9898);
             channels.add(future.channel());
         }
     }

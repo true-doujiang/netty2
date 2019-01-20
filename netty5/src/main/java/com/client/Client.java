@@ -23,7 +23,9 @@ public class Client {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
+            // 不需要监听端口，所以只设置一个Worker线程池
             bootstrap.group(worker);
+            //
             bootstrap.channel(NioSocketChannel.class);
 
             bootstrap.handler(new ChannelInitializer<Channel>() {
@@ -35,7 +37,8 @@ public class Client {
                 }
             });
 
-            ChannelFuture connect = bootstrap.connect("127.0.0.1", 10101);
+            //
+            ChannelFuture channelFuture = bootstrap.connect("127.0.0.1", 9898);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
@@ -43,7 +46,7 @@ public class Client {
                 String s = reader.readLine();
 
                 //Channel 线程安全    看源码
-                connect.channel().writeAndFlush(s);
+                channelFuture.channel().writeAndFlush(s);
             }
         } catch (Exception e) {
             e.printStackTrace();

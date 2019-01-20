@@ -19,16 +19,15 @@ import org.jboss.netty.util.HashedWheelTimer;
  */
 public class Server {
 
+    /**
+     * 本demo只是检测客户单有没有读写数据，并不是发送心跳数据报
+     */
 	public static void main(String[] args) {
 
-		//服务类
 		ServerBootstrap bootstrap = new ServerBootstrap();
-		
-		//boss线程监听端口，worker线程负责数据读写
+
 		ExecutorService boss = Executors.newCachedThreadPool();
 		ExecutorService worker = Executors.newCachedThreadPool();
-		
-		//设置niosocket工厂
 		bootstrap.setFactory(new NioServerSocketChannelFactory(boss, worker));
 		
 		//netty的定时器
@@ -40,8 +39,8 @@ public class Server {
 			public ChannelPipeline getPipeline() throws Exception {
 
 				ChannelPipeline pipeline = Channels.pipeline();
-				//添加检测会话状态的定时器
-				pipeline.addLast("idle", new IdleStateHandler(hashedWheelTimer, 5, 5, 10));
+				//添加检测会话状态的定时器   时间站在服务器的角度 readerIdleTimeSeconds: server这么久没有收到数据就出发
+				pipeline.addLast("idle", new IdleStateHandler(hashedWheelTimer, 8, 11, 30));
 				pipeline.addLast("decoder", new StringDecoder());
 				pipeline.addLast("encoder", new StringEncoder());
 				pipeline.addLast("helloHandler", new HelloHandler());
@@ -49,7 +48,7 @@ public class Server {
 			}
 		});
 		
-		bootstrap.bind(new InetSocketAddress(10101));
+		bootstrap.bind(new InetSocketAddress(9898));
 		
 		System.out.println("start!!!");
 	}
