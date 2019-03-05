@@ -45,7 +45,7 @@ public class Server {
 			}
 		});
 		
-		bootstrap.bind(new InetSocketAddress(10101));
+		bootstrap.bind(new InetSocketAddress(8088));
 		
 		System.out.println("start!!!");
 		
