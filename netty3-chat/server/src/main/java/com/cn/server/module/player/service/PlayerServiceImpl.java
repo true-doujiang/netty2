@@ -71,6 +71,7 @@ public class PlayerServiceImpl implements PlayerService {
 
 		// 加入在线玩家会话
 		if (SessionManager.putSession(player.getPlayerId(), session)) {
+			// 登陆的时候添加 Attachment
 			session.setAttachment(player);
 		} else {
 			throw new ErrorCodeException(ResultCode.LOGIN_FAIL);
