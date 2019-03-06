@@ -13,48 +13,49 @@ import org.springframework.stereotype.Component;
 
 import com.cn.common.core.codc.RequestDecoder;
 import com.cn.common.core.codc.ResponseEncoder;
+
 /**
  * netty服务端入门
- * @author -琴兽-
  *
+ * @author -琴兽-
  */
 @Component
 public class Server {
-	
-	/**
-	 * 启动
-	 */
-	public void start() {
 
-		//服务类
-		ServerBootstrap bootstrap = new ServerBootstrap();
-		
-		//boss线程监听端口，worker线程负责数据读写
-		ExecutorService boss = Executors.newCachedThreadPool();
-		ExecutorService worker = Executors.newCachedThreadPool();
-		
-		//设置niosocket工厂
-		bootstrap.setFactory(new NioServerSocketChannelFactory(boss, worker));
-		
-		//设置管道的工厂
-		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-			
-			@Override
-			public ChannelPipeline getPipeline() throws Exception {
+    /**
+     * 启动
+     */
+    public void start() {
 
-				ChannelPipeline pipeline = Channels.pipeline();
-				pipeline.addLast("decoder", new RequestDecoder());
-				pipeline.addLast("encoder", new ResponseEncoder());
-				pipeline.addLast("helloHandler", new ServerHandler());
-				return pipeline;
-			}
-		});
-		
-		bootstrap.setOption("backlog", 1024);
-		
-		bootstrap.bind(new InetSocketAddress(10102));
-		
-		System.out.println("start!!!");
-	}
+        //服务类
+        ServerBootstrap bootstrap = new ServerBootstrap();
+
+        //boss线程监听端口，worker线程负责数据读写
+        ExecutorService boss = Executors.newCachedThreadPool();
+        ExecutorService worker = Executors.newCachedThreadPool();
+
+        //设置niosocket工厂
+        bootstrap.setFactory(new NioServerSocketChannelFactory(boss, worker));
+
+        //设置管道的工厂
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+
+            @Override
+            public ChannelPipeline getPipeline() throws Exception {
+
+                ChannelPipeline pipeline = Channels.pipeline();
+                pipeline.addLast("decoder", new RequestDecoder());
+                pipeline.addLast("encoder", new ResponseEncoder());
+                pipeline.addLast("helloHandler", new ServerHandler());
+                return pipeline;
+            }
+        });
+
+        bootstrap.setOption("backlog", 1024);
+
+        bootstrap.bind(new InetSocketAddress(8088));
+
+        System.out.println("start!!!");
+    }
 
 }

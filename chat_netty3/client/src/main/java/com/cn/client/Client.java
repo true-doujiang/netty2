@@ -23,98 +23,98 @@ import com.cn.common.core.model.Request;
 
 /**
  * netty客户端入门
- * 
+ *
  * @author -琴兽-
- * 
  */
 @Component
 public class Client {
-	
-	/**
-	 * 界面
-	 */
-	@Autowired
-	private Swingclient swingclient;
 
-	/**
-	 * 服务类
-	 */
-	ClientBootstrap bootstrap = new ClientBootstrap();
+    /**
+     * 界面
+     */
+    @Autowired
+    private Swingclient swingclient;
 
-	/**
-	 * 会话
-	 */
-	private Channel channel;
+    /**
+     * 服务类
+     */
+    ClientBootstrap bootstrap = new ClientBootstrap();
 
-	/**
-	 * 线程池
-	 */
-	private ExecutorService boss = Executors.newCachedThreadPool();
-	private ExecutorService worker = Executors.newCachedThreadPool();
+    /**
+     * 会话
+     */
+    private Channel channel;
 
-	/**
-	 * 初始化
-	 */
-	@PostConstruct
-	public void init() {
-		// socket工厂
-		bootstrap.setFactory(new NioClientSocketChannelFactory(boss, worker));
+    /**
+     * 线程池
+     */
+    private ExecutorService boss = Executors.newCachedThreadPool();
+    private ExecutorService worker = Executors.newCachedThreadPool();
 
-		// 管道工厂
-		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+    /**
+     * 初始化
+     */
+    @PostConstruct
+    public void init() {
+        // socket工厂
+        bootstrap.setFactory(new NioClientSocketChannelFactory(boss, worker));
 
-			@Override
-			public ChannelPipeline getPipeline() throws Exception {
-				ChannelPipeline pipeline = Channels.pipeline();
-				pipeline.addLast("decoder", new ResponseDecoder());
-				pipeline.addLast("encoder", new RequestEncoder());
-				pipeline.addLast("hiHandler", new ClientHandler(swingclient));
-				return pipeline;
-			}
-		});
-	}
+        // 管道工厂
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
 
-	/**
-	 * 连接
-	 * 
-	 * @param ip
-	 * @param port
-	 * @throws InterruptedException
-	 */
-	public void connect() throws InterruptedException {
+            @Override
+            public ChannelPipeline getPipeline() throws Exception {
+                ChannelPipeline pipeline = Channels.pipeline();
+                pipeline.addLast("decoder", new ResponseDecoder());
+                pipeline.addLast("encoder", new RequestEncoder());
+                pipeline.addLast("hiHandler", new ClientHandler(swingclient));
+                return pipeline;
+            }
+        });
+    }
 
-		// 连接服务端
-		ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 10102));
-		connect.sync();
-		channel = connect.getChannel();
-	}
+    /**
+     * 连接
+     *
+     * @param ip
+     * @param port
+     * @throws InterruptedException
+     */
+    public void connect() throws InterruptedException {
 
-	/**
-	 * 关闭
-	 */
-	public void shutdown() {
-		bootstrap.shutdown();
-	}
+        // 连接服务端
+        ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 8088));
+        connect.sync();
+        channel = connect.getChannel();
+    }
 
-	/**
-	 * 获取会话
-	 * 
-	 * @return
-	 */
-	public Channel getChannel() {
-		return channel;
-	}
-	
-	/**
-	 * 发送消息
-	 * @param request
-	 * @throws InterruptedException 
-	 */
-	public void sendRequest(Request request) throws InterruptedException{
-		if(channel == null || !channel.isConnected()){
-			connect();
-		}
-		channel.write(request);
-	}
-	
+    /**
+     * 关闭
+     */
+    public void shutdown() {
+        bootstrap.shutdown();
+    }
+
+    /**
+     * 获取会话
+     *
+     * @return
+     */
+    public Channel getChannel() {
+        return channel;
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param request
+     * @throws InterruptedException
+     */
+    public void sendRequest(Request request) throws InterruptedException {
+        if (channel == null || !channel.isConnected()) {
+            connect();
+        }
+        channel.write(request);
+    }
+
 }
