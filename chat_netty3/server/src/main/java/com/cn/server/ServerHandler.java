@@ -59,6 +59,7 @@ public class ServerHandler extends SimpleChannelHandler {
                 if (request.getModule() == ModuleId.PLAYER) {
                     result = (Result<?>) invoker.invoke(session, request.getData());
                 } else {
+                    // 玩家登陆的时候添加的   如果没有登陆的话获取到null
                     Object attachment = session.getAttachment();
                     if (attachment != null) {
                         Player player = (Player) attachment;
@@ -73,7 +74,7 @@ public class ServerHandler extends SimpleChannelHandler {
 
                 //判断请求是否成功
                 if (result.getResultCode() == ResultCode.SUCCESS) {
-                    //回写数据
+                    //回写数据 业务层返回的数据
                     Object object = result.getContent();
                     if (object != null) {
                         if (object instanceof Serializer) {

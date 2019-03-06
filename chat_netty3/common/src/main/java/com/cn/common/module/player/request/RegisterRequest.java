@@ -4,46 +4,47 @@ import com.cn.common.core.serial.Serializer;
 
 /**
  * 注册请求
- * @author -琴兽-
  *
+ * @author -琴兽-
  */
-public class RegisterRequest extends Serializer{
-	
-	/**
-	 * 用户名
-	 */
-	private String playerName;
-	
-	/**
-	 * 密码
-	 */
-	private String passward;
+public class RegisterRequest extends Serializer {
 
-	public String getPlayerName() {
-		return playerName;
-	}
+    /**
+     * 用户名
+     */
+    private String playerName;
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
-	}
+    /**
+     * 密码
+     */
+    private String passward;
 
-	public String getPassward() {
-		return passward;
-	}
 
-	public void setPassward(String passward) {
-		this.passward = passward;
-	}
-	
-	@Override
-	protected void read() {
-		this.playerName = readString();
-		this.passward = readString();
-	}
+    public String getPlayerName() {
+        return playerName;
+    }
 
-	@Override
-	protected void write() {
-		writeString(playerName);
-		writeString(passward);
-	}
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public String getPassward() {
+        return passward;
+    }
+
+    public void setPassward(String passward) {
+        this.passward = passward;
+    }
+
+    @Override
+    protected void read() {
+        this.playerName = readString();
+        this.passward = readString();
+    }
+
+    @Override
+    protected void write() {
+        writeString(playerName);
+        writeString(passward);
+    }
 }

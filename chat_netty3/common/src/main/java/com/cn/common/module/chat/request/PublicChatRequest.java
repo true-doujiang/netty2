@@ -1,33 +1,36 @@
 package com.cn.common.module.chat.request;
 
 import com.cn.common.core.serial.Serializer;
+
 /**
  * 广播消息
- * @author -琴兽-
  *
+ * @author -琴兽-
  */
-public class PublicChatRequest extends Serializer{
-	
-	/**
-	 * 内容
-	 */
-	private String context;
+public class PublicChatRequest extends Serializer {
 
-	public String getContext() {
-		return context;
-	}
+    /**
+     * 内容
+     */
+    private String context;
 
-	public void setContext(String context) {
-		this.context = context;
-	}
 
-	@Override
-	protected void read() {
-		this.context = readString();
-	}
 
-	@Override
-	protected void write() {
-		writeString(context);
-	}
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    @Override
+    protected void read() {
+        this.context = readString();
+    }
+
+    @Override
+    protected void write() {
+        writeString(context);
+    }
 }

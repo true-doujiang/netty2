@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.cn.common.core.annotion;
 
@@ -10,17 +10,18 @@ import java.lang.annotation.Target;
 
 /**
  * 请求命令
- * @author -琴兽-
  *
+ * @author -琴兽-
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SocketCommand {
-	
-	/**
-	 * 请求的命令号
-	 * @return
-	 */
-	short cmd();
+
+    /**
+     * 请求的命令号
+     *
+     * @return
+     */
+    short cmd();
 
 }

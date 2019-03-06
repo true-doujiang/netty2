@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.cn.common.core.annotion;
 
@@ -10,16 +10,17 @@ import java.lang.annotation.Target;
 
 /**
  * 请求模块
- * @author -琴兽-
  *
+ * @author -琴兽-
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SocketModule {
-	
-	/**
-	 * 请求的模块号
-	 * @return
-	 */
-	short module();
+
+    /**
+     * 请求的模块号
+     *
+     * @return
+     */
+    short module();
 }
