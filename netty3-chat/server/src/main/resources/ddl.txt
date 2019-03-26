@@ -1,0 +1,8 @@
+CREATE TABLE `player` (
+  `playerId` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `playerName` varchar(20) DEFAULT NULL,
+  `passward` varchar(20) DEFAULT NULL,
+  `level` varchar(20) DEFAULT NULL,
+  `exp` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`playerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
